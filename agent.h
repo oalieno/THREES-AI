@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "board.h"
 #include "action.h"
+#include "bag.h"
 
 class agent {
 public:
@@ -62,13 +63,13 @@ protected:
 class rndenv : public random_agent {
 public:
 	rndenv(const std::string& args = "") : random_agent("name=random role=environment " + args),
-		space({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }), popup(0, 9) {}
+		space({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }) {}
 
 	virtual action take_action(const board& after) {
 		std::shuffle(space.begin(), space.end(), engine);
 		for (int pos : space) {
 			if (after(pos) != 0) continue;
-			board::cell tile = popup(engine) ? 1 : 2;
+            board::cell tile = popup.get_tile(engine);
 			return action::place(pos, tile);
 		}
 		return action();
@@ -76,7 +77,7 @@ public:
 
 private:
 	std::array<int, 16> space;
-	std::uniform_int_distribution<int> popup;
+    bag popup;
 };
 
 /**
