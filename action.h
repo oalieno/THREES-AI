@@ -47,6 +47,7 @@ protected:
     static prototype& entries() { static prototype m; return m; }
     virtual action& reinterpret(const action* a) const { return *new (const_cast<action*>(a)) action(*a); }
 
+public:
     unsigned code;
 };
 

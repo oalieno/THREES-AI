@@ -22,7 +22,7 @@ public:
     virtual ~agent() {}
     virtual void open_episode(const std::string& flag = "") {}
     virtual void close_episode(const std::string& flag = "") {}
-    virtual action take_action(const board& b) { return action(); }
+    virtual action take_action(const board& b, action last) { return action(); }
     virtual bool check_for_win(const board& b) { return false; }
 
 public:
@@ -62,10 +62,18 @@ protected:
  */
 class rndenv : public random_agent {
 public:
+    typedef std::vector<int> grid;
     rndenv(const std::string& args = "") : random_agent("name=random role=environment " + args),
-        space({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }) {}
+        spaces({{ 12, 13, 14, 15 },
+                { 0, 4, 8, 12 },
+                { 0, 1, 2, 3 },
+                { 3, 7, 11, 15 },
+                { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 }}) {}
 
-    virtual action take_action(const board& after) {
+    virtual action take_action(const board& after, action last) {
+        grid space = spaces[last.event() & 0b11];
+        if ((int)last.code == -1) space = spaces[4];
+
         std::shuffle(space.begin(), space.end(), engine);
         for (int pos : space) {
             if (after(pos) != 0) continue;
@@ -76,7 +84,7 @@ public:
     }
 
 private:
-    std::array<int, 16> space;
+    std::vector<grid> spaces;
     bag popup;
 };
 
@@ -89,7 +97,7 @@ public:
     player(const std::string& args = "") : random_agent("name=dummy role=player " + args),
         opcode({ 0, 1, 2, 3 }) {}
 
-    virtual action take_action(const board& before) {
+    virtual action take_action(const board& before, action last) {
         std::shuffle(opcode.begin(), opcode.end(), engine);
         for (int op : opcode) {
             board::reward reward = board(before).slide(op);
