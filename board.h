@@ -2,6 +2,8 @@
 #include <array>
 #include <iostream>
 #include <iomanip>
+#include <cmath>
+#include "utils.h"
 
 /**
  * array-based board for 2048
@@ -58,6 +60,18 @@ public:
         return std::max(tile1, tile2) + 1;
     }
 
+    int value() {
+        int sum = 0;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (tile[i][j] >= 3) {
+                    sum += i2v(tile[i][j]);
+                }
+            }
+        }
+        return pow(3.0, log2(sum / 3.0) + 1.0);
+    }
+
     /**
      * place a tile (index value) to the specific position (1-d form index)
      * return 0 if the action is valid, or -1 if not
@@ -85,7 +99,7 @@ public:
 
     reward slide_left() {
         board prev = *this;
-        reward score = 0;
+        reward prev_value = value();
         for (int r = 0; r < 4; r++) {
             auto& row = tile[r];
             for (int c = 1; c < 4; c++) {
@@ -101,7 +115,7 @@ public:
                 }
             }
         }
-        return (*this != prev) ? score : -1;
+        return (*this != prev) ? (value() - prev_value) : -1;
     }
     reward slide_right() {
         reflect_horizontal();

@@ -101,12 +101,21 @@ public:
     player(const std::string& args = "") : random_agent("name=dummy role=player " + args),
         opcode({ 0, 1, 2, 3 }) {}
 
-    virtual action take_action(const board& before, action last) {
-        std::shuffle(opcode.begin(), opcode.end(), engine);
-        for (int op : opcode) {
-            board::reward reward = board(before).slide(op);
-            if (reward != -1) return action::slide(op);
+    int search(const board& b) {
+        int big = -1, op = -1;
+        for(int i = 0; i < 4; i++) {
+            int reward = board(b).slide(i);
+            if (reward > big) {
+                big = reward;
+                op = i;
+            }
         }
+        return op;
+    }
+
+    virtual action take_action(const board& before, action last) {
+        int op = search(before);
+        if (op != -1) return action::slide(op);
         return action();
     }
 
