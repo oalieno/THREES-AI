@@ -66,11 +66,21 @@ int main(int argc, const char* argv[]) {
         stat.open_episode(play.name() + ":" + evil.name());
         episode& game = stat.back();
 
+        for(int i = 0 ; i < 9; i++) {
+            game.reset_time();
+            action move = evil.take_action(game.state(), game.last_action());
+            game.apply_action(move);
+        }
         while (true) {
-            agent& who = game.take_turns(play, evil);
-            action move = who.take_action(game.state(), game.last_action());
-            if (game.apply_action(move) != true) break;
-            if (who.check_for_win(game.state())) break;
+            action move;
+           
+            game.reset_time();
+            move = play.take_action(game.state(), game.last_action());
+            if (!game.apply_action(move)) break;
+
+            game.reset_time();
+            move = evil.take_action(game.state(), game.last_action());
+            if (!game.apply_action(move)) break;
         }
 
         agent& win = game.last_turns(play, evil);

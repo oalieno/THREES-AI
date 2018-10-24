@@ -47,6 +47,9 @@ public:
     agent& last_turns(agent& play, agent& evil) {
         return take_turns(evil, play);
     }
+    void reset_time() {
+        ep_time = millisec();
+    }
 
 public:
     size_t step(unsigned who = -1u) const {
