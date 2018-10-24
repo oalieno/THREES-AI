@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iterator>
 #include <string>
+#include <ctime>
 #include "board.h"
 #include "action.h"
 #include "agent.h"
@@ -56,7 +57,7 @@ int main(int argc, const char* argv[]) {
     }
 
     player play(play_args);
-    rndenv evil(evil_args);
+    rndenv evil(evil_args + std::string("seed=") + std::to_string(int(time(0))));
 
     while (!stat.is_finished()) {
         play.open_episode("~:" + evil.name());
@@ -64,12 +65,14 @@ int main(int argc, const char* argv[]) {
 
         stat.open_episode(play.name() + ":" + evil.name());
         episode& game = stat.back();
+
         while (true) {
             agent& who = game.take_turns(play, evil);
             action move = who.take_action(game.state(), game.last_action());
             if (game.apply_action(move) != true) break;
             if (who.check_for_win(game.state())) break;
         }
+
         agent& win = game.last_turns(play, evil);
         stat.close_episode(win.name());
 
