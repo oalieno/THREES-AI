@@ -52,7 +52,8 @@ public:
     void update(int r, const board& s, const board& ss) {
         float alpha = 0.005;
         for (int i = 0; i < 8; i++) {
-            f(s, i) += alpha * (r + f(ss, i) - f(s, i));
+            if (r == -1) f(s, i) += alpha * -f(s, i);
+            else f(s, i) += alpha * (r + f(ss, i) - f(s, i));
         }
     }
 

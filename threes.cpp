@@ -18,7 +18,7 @@
 #include "statistic.h"
 
 int main(int argc, const char* argv[]) {
-    std::cout << "2048-Demo: ";
+    std::cout << "THREES-AI: ";
     std::copy(argv, argv + argc, std::ostream_iterator<const char*>(std::cout, " "));
     std::cout << std::endl << std::endl;
 
@@ -83,6 +83,7 @@ int main(int argc, const char* argv[]) {
             
             game.reset_time();
             move = evil.take_action(game.state(), game.last_action());
+            if (!game.apply_action(move)) break;
             
             board ss = game.state();
             

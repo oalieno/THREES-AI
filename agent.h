@@ -6,6 +6,7 @@
 #include <type_traits>
 #include <algorithm>
 #include <functional>
+#include <limits>
 #include "board.h"
 #include "action.h"
 #include "bag.h"
@@ -102,12 +103,13 @@ public:
     float evaluate(const board& b, int a) {
         auto s = b;
         int r = s.slide(a);
-        return r + v(s);
+        if (r == -1) return std::numeric_limits<float>::min();
+        else return r + v(s);
     }
 
     int argmax(std::function<float(int)> f, int x, int y) {
-        float big = f(x); int a = -1;
-        for (int i = x; i < y; i++) {
+        float big = f(x); int a = x;
+        for (int i = x + 1; i < y; i++) {
             if (float r = f(i); r > big) {
                 big = r;
                 a = i;
@@ -125,8 +127,7 @@ public:
 
     virtual action take_action(const board& before, action last) {
         auto f = [&](int i) -> float { return evaluate(before, i); };
-        if (auto a = argmax(f, 0, 4); a != -1) return action::slide(a);
-        return action();
+        return action::slide(argmax(f, 0, 4));
     }
 
     void save_weight() {
