@@ -88,3 +88,5 @@ tags
 *.dSYM
 threes
 judge
+weight-*
+callgrind.out.*

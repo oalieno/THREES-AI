@@ -12,19 +12,27 @@
 #include <vector>
 #include <utility>
 #include <fstream>
+#include <string>
+#include <sstream>
 
 class weight {
 public:
-    weight() : filename("weight.txt"), index({{{0, 1, 2, 3}, 
-                                              {3, 7, 11, 15},
-                                              {15, 14, 13, 12},
-                                              {12, 8, 4, 0},
-                                              {1, 5, 9, 13},
-                                              {2, 6, 10, 14},
-                                              {4, 5, 6, 7},
-                                              {8, 9, 10, 11}}}), lut({})
+    typedef std::vector<std::vector<std::vector<int>>> I3;
+    typedef std::vector<std::vector<float>> F2;
+    weight(float alpha, I3 index) : alpha(alpha), type(size(index)), amount(size(index[0])), len(size(index[0][0])), index(index)
     {
+        for(int i = 0; i < type; i++) {
+            lut.push_back(std::vector<float>(power(15, len), 0.0));
+        }
+        std::stringstream ss;
+        ss << std::fixed << std::setprecision(10) << "weight-" << type << "-" << amount << "-" << len << "-" << alpha;
+        ss >> filename;
         load();
+    }
+    int power(int x, int m) {
+        int ans = 1;
+        for(int i = 0; i < m; i++) ans *= x;
+        return ans;
     }
     void load() {
         std::ifstream file(filename);
@@ -37,29 +45,29 @@ public:
         std::ofstream file(filename);
         for (auto& i : lut) for (auto& j : i) file << std::fixed << std::setprecision(20) << j << " ";
     }
-    float& f(const board& s, int idx) {
+    float& f(const board& s, int i, int j) {
         int key = 0;
-        for (auto i : index[idx]) key = key * 15 + s(i);
-        return lut[idx > 3][key];
+        for (auto k : index[i][j]) key = key * 15 + s(k);
+        return lut[i][key];
     }
     float operator() (const board& s) {
         float sum = 0.0;
-        for (int i = 0; i < 8; i++) {
-            sum += f(s, i);
+        for (int i = 0; i < type; i++) for (int j = 0; j < amount; j++) {
+            sum += f(s, i, j);
         }
         return sum;
     }
     void update(int r, const board& s, const board& ss) {
-        float alpha = 0.005;
-        for (int i = 0; i < 8; i++) {
-            if (r == -1) f(s, i) += alpha * -f(s, i);
-            else f(s, i) += alpha * (r + f(ss, i) - f(s, i));
+        for (int i = 0; i < type; i++) for (int j = 0; j < amount; j++) {
+            auto td_target = (r == -1) ? 0 : r + f(ss, i, j);
+            f(s, i, j) += alpha * (td_target - f(s, i, j));
         }
     }
 
 protected:
-    static const int size = 15 * 15 * 15 * 15;
-    const char *filename;
-    std::array<std::array<int, 4>, 8> index; // [8][4]
-    std::array<std::array<float, size>, 2> lut; // [2][15 ** 4]
+    float alpha;
+    int type, amount, len;
+    std::string filename;
+    I3 index; // [type][amount][len]
+    F2 lut;   // [type][15 ** len]
 };

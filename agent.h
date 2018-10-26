@@ -97,7 +97,7 @@ private:
 
 class player : public agent {
 public:
-    player(const std::string& args = "", const weight& v = {}) : agent("name=td0 role=player " + args),
+    player(const std::string& args = "", const weight& v = {0.0, {}}) : agent("name=td0 role=player " + args),
         counter(0), opcode({ 0, 1, 2, 3 }), v(v) {}
 
     float evaluate(const board& b, int a) {
@@ -107,7 +107,7 @@ public:
         else return r + v(s);
     }
 
-    int argmax(std::function<float(int)> f, int x, int y) {
+    int argmax(const std::function<float(int)> &f, int x, int y) {
         float big = f(x); int a = x;
         for (int i = x + 1; i < y; i++) {
             if (float r = f(i); r > big) {

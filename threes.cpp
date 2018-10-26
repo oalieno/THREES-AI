@@ -17,35 +17,24 @@
 #include "episode.h"
 #include "statistic.h"
 
-int main(int argc, const char* argv[]) {
+#include "flags/include/flags.h"
+
+int main(int argc, char** argv) {
+    const flags::args args(argc, argv);
+
     std::cout << "THREES-AI: ";
-    std::copy(argv, argv + argc, std::ostream_iterator<const char*>(std::cout, " "));
     std::cout << std::endl << std::endl;
 
-    size_t total = 1000, block = 0, limit = 0;
-    std::string play_args, evil_args;
-    std::string load, save;
-    bool summary = false;
-    for (int i = 1; i < argc; i++) {
-        std::string para(argv[i]);
-        if (para.find("--total=") == 0) {
-            total = std::stoull(para.substr(para.find("=") + 1));
-        } else if (para.find("--block=") == 0) {
-            block = std::stoull(para.substr(para.find("=") + 1));
-        } else if (para.find("--limit=") == 0) {
-            limit = std::stoull(para.substr(para.find("=") + 1));
-        } else if (para.find("--play=") == 0) {
-            play_args = para.substr(para.find("=") + 1);
-        } else if (para.find("--evil=") == 0) {
-            evil_args = para.substr(para.find("=") + 1);
-        } else if (para.find("--load=") == 0) {
-            load = para.substr(para.find("=") + 1);
-        } else if (para.find("--save=") == 0) {
-            save = para.substr(para.find("=") + 1);
-        } else if (para.find("--summary") == 0) {
-            summary = true;
-        }
-    }
+    auto total = args.get<size_t>("total", 1000);
+    auto block = args.get<size_t>("block", 0);
+    auto limit = args.get<size_t>("limit", 0);
+    auto play_args = args.get<std::string>("play", "");
+    auto evil_args = args.get<std::string>("evil", "");
+    auto load = args.get<std::string>("load", "");
+    auto save = args.get<std::string>("save", "");
+    auto summary = args.get<bool>("summary", false);
+    auto alpha = args.get<float>("alpha", 0.05);
+    auto feature = args.get<int>("feature", 0);
 
     statistic stat(total, block, limit);
 
@@ -56,8 +45,48 @@ int main(int argc, const char* argv[]) {
         summary |= stat.is_finished();
     }
 
-    weight v;
-    player play(play_args, v);
+    weight v4_8(alpha, {{{0, 1, 2, 3},
+                         {3, 7, 11, 15},
+                         {15, 14, 13, 12},
+                         {12, 8, 4, 0}},
+                        {{1, 5, 9, 13},
+                         {2, 6, 10, 14},
+                         {4, 5, 6, 7},
+                         {8, 9, 10, 11}}});
+    weight v6_32(alpha, {{{0, 1, 2, 3, 4, 5},
+                          {3, 2, 1, 0, 7, 6},
+                          {12, 13, 14, 15, 8, 9},
+                          {15, 14, 13, 12, 11, 10},
+                          {0, 4, 8, 12, 1, 5},
+                          {12, 8, 4, 0, 13, 9},
+                          {3, 7, 11, 15, 2, 6},
+                          {15, 11, 7, 3, 14, 10}},
+                         {{4, 5, 6, 7, 8, 9},
+                          {7, 6, 5, 4, 11, 10},
+                          {8, 9, 10, 11, 4, 5},
+                          {11, 10, 9, 8, 7, 6},
+                          {1, 5, 9, 13, 2, 6},
+                          {13, 9, 5, 1, 14, 10},
+                          {2, 6, 10, 14, 1, 5},
+                          {14, 10, 6, 2, 13, 9}},
+                         {{9, 10, 11, 13, 14, 15},
+                          {10, 9, 8, 14, 13, 12},
+                          {5, 6, 7, 1, 2, 3},
+                          {6, 5, 4, 2, 1, 0},
+                          {6, 10, 14, 7, 11, 15},
+                          {10, 6, 2, 11, 7, 3},
+                          {5, 9, 13, 4, 8, 12},
+                          {9, 5, 1, 8, 4, 0}},
+                         {{5, 6, 7, 9, 10, 11},
+                          {9, 10, 11, 5, 6, 7},
+                          {6, 5, 4, 10, 9, 8},
+                          {10, 9, 8, 6, 5, 4},
+                          {9, 5, 1, 10, 6, 2},
+                          {10, 6, 2, 9, 5, 1},
+                          {5, 9, 13, 6, 10, 14},
+                          {6, 10, 14, 5, 9, 13}}});
+    weight v[2] = {v4_8, v6_32};
+    player play(play_args, v[feature]);
     rndenv evil(evil_args + std::string("seed=") + std::to_string(int(time(0))));
 
     while (!stat.is_finished()) {
