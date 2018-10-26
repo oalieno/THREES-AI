@@ -56,7 +56,8 @@ int main(int argc, const char* argv[]) {
         summary |= stat.is_finished();
     }
 
-    player play(play_args);
+    weight v;
+    player play(play_args, v);
     rndenv evil(evil_args + std::string("seed=") + std::to_string(int(time(0))));
 
     while (!stat.is_finished()) {
@@ -78,9 +79,14 @@ int main(int argc, const char* argv[]) {
             move = play.take_action(game.state(), game.last_action());
             if (!game.apply_action(move)) break;
 
+            board s = game.state();
+            
             game.reset_time();
             move = evil.take_action(game.state(), game.last_action());
-            if (!game.apply_action(move)) break;
+            
+            board ss = game.state();
+            
+            play.learn(s, ss);
         }
 
         agent& win = game.last_turns(play, evil);
@@ -89,6 +95,8 @@ int main(int argc, const char* argv[]) {
         play.close_episode(win.name());
         evil.close_episode(win.name());
     }
+
+    play.save_weight();
 
     if (summary) {
         stat.summary();

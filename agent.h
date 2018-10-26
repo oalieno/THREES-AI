@@ -5,9 +5,11 @@
 #include <map>
 #include <type_traits>
 #include <algorithm>
+#include <functional>
 #include "board.h"
 #include "action.h"
 #include "bag.h"
+#include "weight.h"
 
 class agent {
 public:
@@ -92,33 +94,47 @@ private:
     bag popup;
 };
 
-/**
- * dummy player
- * select a legal action randomly
- */
-class player : public random_agent {
+class player : public agent {
 public:
-    player(const std::string& args = "") : random_agent("name=dummy role=player " + args),
-        opcode({ 0, 1, 2, 3 }) {}
+    player(const std::string& args = "", const weight& v = {}) : agent("name=td0 role=player " + args),
+        counter(0), opcode({ 0, 1, 2, 3 }), v(v) {}
 
-    int search(const board& b) {
-        int big = -1, op = -1;
-        for(int i = 0; i < 4; i++) {
-            int reward = board(b).slide(i);
-            if (reward > big) {
-                big = reward;
-                op = i;
+    float evaluate(const board& b, int a) {
+        auto s = b;
+        int r = s.slide(a);
+        return r + v(s);
+    }
+
+    int argmax(std::function<float(int)> f, int x, int y) {
+        float big = f(x); int a = -1;
+        for (int i = x; i < y; i++) {
+            if (float r = f(i); r > big) {
+                big = r;
+                a = i;
             }
         }
-        return op;
+        return a;
+    }
+
+    void learn(const board& s, const board& ss) {
+        board sss = ss;
+        auto f = [&](int i) -> float { return evaluate(ss, i); };
+        int rr = sss.slide(argmax(f, 0, 4));
+        v.update(rr, s, sss);
     }
 
     virtual action take_action(const board& before, action last) {
-        int op = search(before);
-        if (op != -1) return action::slide(op);
+        auto f = [&](int i) -> float { return evaluate(before, i); };
+        if (auto a = argmax(f, 0, 4); a != -1) return action::slide(a);
         return action();
     }
 
+    void save_weight() {
+        v.save();
+    }
+
 private:
+    int counter;
     std::array<int, 4> opcode;
+    weight v;
 };
