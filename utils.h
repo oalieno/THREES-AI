@@ -12,5 +12,10 @@ int i2v(int index) {
 
 int v2i(int value) {
     if(value % 3 != 0) return value;
-    return (value / 3) + 2;
+    value = value / 3;
+    int ans = 0;
+    while((1 << ans) < value) ans++;
+    return ans + 3;
 }
+
+

@@ -60,16 +60,24 @@ public:
         return std::max(tile1, tile2) + 1;
     }
 
+    int power(int x, int m) {
+        int ans = 1;
+        for(int i = 0; i < m; i++) {
+            ans *= x;
+        }
+        return ans;
+    }
+
     int value() {
         int sum = 0;
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 if (tile[i][j] >= 3) {
-                    sum += i2v(tile[i][j]);
+                    sum += power(3, tile[i][j] - 2);
                 }
             }
         }
-        return pow(3.0, log2(sum / 3.0) + 1.0);
+        return sum;
     }
 
     /**

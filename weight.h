@@ -19,13 +19,13 @@ class weight {
 public:
     typedef std::vector<std::vector<std::vector<int>>> I3;
     typedef std::vector<std::vector<float>> F2;
-    weight(float alpha, const I3& index) : alpha(alpha), type(size(index)), amount(size(index[0])), len(size(index[0][0])), index(index)
+    weight(float alpha, int len_max, const I3& index) : alpha(alpha), type(size(index)), amount(size(index[0])), len(size(index[0][0])), len_max(len_max), index(index)
     {
         for(int i = 0; i < type; i++) {
-            lut.push_back(std::vector<float>(power(SIZE, len), 0.0));
+            lut.push_back(std::vector<float>(power(len_max, len), 0.0));
         }
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(10) << "weight-" << type << "-" << amount << "-" << len << "-" << alpha;
+        ss << std::fixed << std::setprecision(10) << "weight-" << type << "-" << amount << "-" << len << "-" << len_max << "-" << alpha;
         ss >> filename;
         load();
     }
@@ -49,7 +49,7 @@ public:
         int key = 0;
         for (auto k : index[i][j]) {
             int sk = s(k);
-            key = key * SIZE + (sk >= SIZE ? SIZE - 1 : sk);
+            key = key * len_max + (sk >= len_max ? len_max - 1 : sk);
         }
         return lut[i][key];
     }
@@ -68,9 +68,8 @@ public:
     }
 
 protected:
-    static const int SIZE = 12;
     float alpha;
-    int type, amount, len;
+    int type, amount, len, len_max;
     std::string filename;
     I3 index; // [type][amount][len]
     F2 lut;   // [type][15 ** len]
