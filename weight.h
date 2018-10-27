@@ -19,10 +19,10 @@ class weight {
 public:
     typedef std::vector<std::vector<std::vector<int>>> I3;
     typedef std::vector<std::vector<float>> F2;
-    weight(float alpha, I3 index) : alpha(alpha), type(size(index)), amount(size(index[0])), len(size(index[0][0])), index(index)
+    weight(float alpha, const I3& index) : alpha(alpha), type(size(index)), amount(size(index[0])), len(size(index[0][0])), index(index)
     {
         for(int i = 0; i < type; i++) {
-            lut.push_back(std::vector<float>(power(15, len), 0.0));
+            lut.push_back(std::vector<float>(power(SIZE, len), 0.0));
         }
         std::stringstream ss;
         ss << std::fixed << std::setprecision(10) << "weight-" << type << "-" << amount << "-" << len << "-" << alpha;
@@ -47,7 +47,10 @@ public:
     }
     float& f(const board& s, int i, int j) {
         int key = 0;
-        for (auto k : index[i][j]) key = key * 15 + s(k);
+        for (auto k : index[i][j]) {
+            int sk = s(k);
+            key = key * SIZE + (sk >= SIZE ? SIZE - 1 : sk);
+        }
         return lut[i][key];
     }
     float operator() (const board& s) {
@@ -65,6 +68,7 @@ public:
     }
 
 protected:
+    static const int SIZE = 12;
     float alpha;
     int type, amount, len;
     std::string filename;
