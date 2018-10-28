@@ -14,18 +14,22 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <cstring>
 
 class weight {
 public:
     typedef std::vector<std::vector<std::vector<int>>> I3;
-    typedef std::vector<std::vector<float>> F2;
     weight(float alpha, int len_max, const I3& index) : alpha(alpha), type(size(index)), amount(size(index[0])), len(size(index[0][0])), len_max(len_max), index(index)
     {
-        for(int i = 0; i < type; i++) {
-            lut.push_back(std::vector<float>(power(len_max, len), 0.0));
+        lut = new float*[type];
+        for (int i = 0; i < type; i++) {
+            int l = power(len_max, len);
+            lut[i] = new float[l];
+            memset(lut[i], 0, sizeof(float) * l);
         }
+
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(10) << "weight-" << type << "-" << amount << "-" << len << "-" << len_max << "-" << alpha;
+        ss << std::fixed << std::setprecision(10) << "weights/weight-" << type << "-" << amount << "-" << len << "-" << len_max << "-" << alpha;
         ss >> filename;
         load();
     }
@@ -37,13 +41,20 @@ public:
     void load() {
         std::ifstream file(filename);
         if (file) {
-            for (auto& i : lut) for (auto& j : i) file >> j;
+            int l = power(len_max, len);
+            for (int i = 0; i < type; i++) {
+                file.read((char*)lut[i], sizeof(float) * l);
+            }
         }
         file.close();
     }
     void save() {
         std::ofstream file(filename);
-        for (auto& i : lut) for (auto& j : i) file << std::fixed << std::setprecision(20) << j << " ";
+        for(int i = 0; i < type; i++) {
+            int l = power(len_max, len);
+            file.write((char*)lut[i], sizeof(float) * l);
+        }
+        file.close();
     }
     float& f(const board& s, int i, int j) {
         int key = 0;
@@ -71,6 +82,6 @@ protected:
     float alpha;
     int type, amount, len, len_max;
     std::string filename;
-    I3 index; // [type][amount][len]
-    F2 lut;   // [type][15 ** len]
+    I3 index;  // [type][amount][len]
+    float **lut; // [type][15 ** len]
 };
