@@ -19,8 +19,10 @@
 class weight {
 public:
     typedef std::vector<std::vector<std::vector<int>>> I3;
-    weight(float alpha, int len_max, const I3& index) : alpha(alpha), type(size(index)), amount(size(index[0])), len(size(index[0][0])), len_max(len_max), index(index)
+    weight(int len_max, const I3& index) : type(size(index)), amount(size(index[0])), len(size(index[0][0])), len_max(len_max), index(index)
     {
+        alpha = 0.1 / (type * amount);
+
         lut = new float*[type];
         for (int i = 0; i < type; i++) {
             int l = power(len_max, len);
@@ -31,6 +33,7 @@ public:
         std::stringstream ss;
         ss << std::fixed << std::setprecision(10) << "weights/weight-" << type << "-" << amount << "-" << len << "-" << len_max << "-" << alpha;
         ss >> filename;
+
         load();
     }
     int power(int x, int m) {
@@ -65,6 +68,9 @@ public:
         return lut[i][key];
     }
     float operator() (const board& s) {
+        return value(s);
+    }
+    float value(const board& s) {
         float sum = 0.0;
         for (int i = 0; i < type; i++) for (int j = 0; j < amount; j++) {
             sum += f(s, i, j);
@@ -72,9 +78,10 @@ public:
         return sum;
     }
     void update(int r, const board& s, const board& ss) {
+        auto td_target = (r == -1) ? 0 : r + value(ss);
+        auto delta = alpha * (td_target - value(s));
         for (int i = 0; i < type; i++) for (int j = 0; j < amount; j++) {
-            auto td_target = (r == -1) ? 0 : r + f(ss, i, j);
-            f(s, i, j) += alpha * (td_target - f(s, i, j));
+            f(s, i, j) += delta;
         }
     }
 
