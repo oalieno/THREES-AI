@@ -103,7 +103,7 @@ public:
     float evaluate(const board& b, int a) {
         auto s = b;
         int r = s.slide(a);
-        if (r == -1) return std::numeric_limits<float>::min();
+        if (r == -1) return std::numeric_limits<float>::lowest();
         else return r + v(s);
     }
 
