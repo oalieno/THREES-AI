@@ -46,9 +46,10 @@ int main(int argc, char** argv) {
         summary |= stat.is_finished();
     }
 
-    weight v4_8(len_max, w4_8);
-    weight v6_32(len_max, w6_32);
-    weight v[2] = {v4_8, v6_32};
+    weight v4_8(len_max, 0, w4_8);
+    weight v6_32(len_max, 1, w6_32);
+    weight v6_32_2(len_max, 2, w6_32_2);
+    weight v[3] = {v4_8, v6_32, v6_32_2};
     
     player play(play_args, v[feature]);
     rndenv evil(evil_args + std::string("seed=") + std::to_string(int(time(0))));

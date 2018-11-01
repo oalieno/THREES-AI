@@ -97,7 +97,7 @@ private:
 
 class player : public agent {
 public:
-    player(const std::string& args = "", const weight& v = {0, {}}) : agent("name=td0 role=player " + args),
+    player(const std::string& args = "", const weight& v = {0, 0, {}}) : agent("name=td0 role=player " + args),
         counter(0), opcode({ 0, 1, 2, 3 }), v(v) {}
 
     float evaluate(const board& b, int a) {

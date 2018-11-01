@@ -19,7 +19,7 @@
 class weight {
 public:
     typedef std::vector<std::vector<std::vector<int>>> I3;
-    weight(int len_max, const I3& index) : type(size(index)), amount(size(index[0])), len(size(index[0][0])), len_max(len_max), index(index)
+    weight(int len_max, int feature, const I3& index) : feature(feature), type(size(index)), amount(size(index[0])), len(size(index[0][0])), len_max(len_max), index(index)
     {
         alpha = 0.1 / (type * amount);
 
@@ -31,7 +31,7 @@ public:
         }
 
         std::stringstream ss;
-        ss << std::fixed << std::setprecision(10) << "weights/weight-" << type << "-" << amount << "-" << len << "-" << len_max << "-" << alpha;
+        ss << std::fixed << std::setprecision(10) << "weights/weight-" << feature << "-" << type << "-" << amount << "-" << len << "-" << len_max << "-" << alpha;
         ss >> filename;
 
         load();
@@ -87,7 +87,7 @@ public:
 
 protected:
     float alpha;
-    int type, amount, len, len_max;
+    int feature, type, amount, len, len_max;
     std::string filename;
     I3 index;  // [type][amount][len]
     float **lut; // [type][15 ** len]

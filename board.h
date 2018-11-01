@@ -50,6 +50,7 @@ public:
 public:
 
     bool check_merge(int tile1, int tile2) {
+        if (tile1 >= 14 or tile2 >= 14) return false;
         if (tile1 > tile2) std::swap(tile1, tile2);
         if (tile1 == 1 and tile2 == 2) return true;
         if (tile1 > 2 and tile2 > 2 and tile1 == tile2) return true;
