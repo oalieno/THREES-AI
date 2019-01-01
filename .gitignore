@@ -83,10 +83,3 @@ tags
 
 
 # End of https://www.gitignore.io/api/vim,c++,macos
-
-# Custom
-*.dSYM
-threes
-judge
-weight-*
-callgrind.out.*

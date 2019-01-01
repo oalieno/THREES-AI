@@ -18,7 +18,7 @@
 #include "statistic.h"
 #include "utils.h"
 
-#include "flags/include/flags.h"
+#include "../flags/include/flags.h"
 
 int main(int argc, char** argv) {
     const flags::args args(argc, argv);

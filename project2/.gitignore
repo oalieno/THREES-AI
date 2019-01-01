@@ -1,0 +1,5 @@
+*.dSYM
+threes
+judge
+weights
+callgrind.out.*
