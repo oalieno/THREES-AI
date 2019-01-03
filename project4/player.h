@@ -20,16 +20,24 @@ struct Player {
 	}
 	
     auto evaluation (const Board& board) const {
-        return [&](int i) -> float { return evaluate(board, i); };
+        int a = 0;
+        float max = evaluate(board, 0);
+        for (int i = 1; i < 4; i++) {
+            if (float r = evaluate(board, i); r > max) {
+                max = r;
+                a = i;
+            }
+        }
+        return a;
     }
 
     Action::Slide move (const Board& board) const {
-		return Action::Slide(argmax(evaluation(board), 0, 4));   
+		return Action::Slide(evaluation(board));
     }
 
 	void learn (const Board& as0, const Board& bs1) { 
 		Board as1 = bs1;
-        int action = argmax(evaluation(as1), 0, 4);
+        int action = evaluation(as1);
         int slidable = as1.slidable(action);
         int r1 = as1.slide(action);     
 		weight.update(r1, as0, as1, slidable);
