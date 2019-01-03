@@ -9,7 +9,7 @@ struct NTuple {
     std::string name;
 
     NTuple () {}
-    NTuple (std::string name, const std::vector<std::vector<std::vector<int>>>& index) : name(name), index(index) {
+    NTuple (std::string name, const std::vector<std::vector<std::vector<int>>>& index) : index(index), name(name) {
         type = std::size(index);
         isomorphism = std::size(index[0]);
         len = std::size(index[0][0]);

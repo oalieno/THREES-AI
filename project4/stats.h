@@ -33,5 +33,6 @@ struct Stats {
         std::cout << "total = " << tot << ", ";
         std::cout << "avg = " << sum / tot << ", ";
         std::cout << "max = " << max;
+        std::cout << std::endl;
     }
 };

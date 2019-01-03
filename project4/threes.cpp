@@ -13,6 +13,8 @@
 using namespace std;
 
 int main (int argc, char** argv) {
+    srand(time(0));
+
     const flags::args args(argc, argv);
 
     auto total = args.get<int>("total", 1000);
@@ -28,9 +30,6 @@ int main (int argc, char** argv) {
         std::cerr << ntuple << " not found !" << std::endl;
         return -1;
     }
-    std::cout << weight.ntuple.type << std::endl;
-    std::cout << weight.ntuple.isomorphism << std::endl;
-    std::cout << weight.ntuple.len << std::endl;
 
 
     Environment environment;

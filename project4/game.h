@@ -47,5 +47,7 @@ struct Game {
         }
 
         stats.record(board, moves);
+
+        for (auto move : moves) delete move;
     }
 };
