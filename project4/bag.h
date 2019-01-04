@@ -17,8 +17,10 @@ struct Bag {
 
     int get () {
         if (value.empty()) {
-            for (int i = 1; i <= 3; i++) {
-                value.push_back(i);
+            for (int k = 0; k < 4; k++) {
+                for (int i = 1; i <= 3; i++) {
+                    value.push_back(i);
+                }
             }
         }
         return pop(rand() % value.size());

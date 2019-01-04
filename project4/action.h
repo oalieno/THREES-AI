@@ -17,8 +17,6 @@ struct Action {
     }
 };
 
-
-
 struct Action::Place : Action {
     int index, value;
 
@@ -34,6 +32,8 @@ struct Action::Place : Action {
     }
 };
 
+Action::Place* ACTIONPLACES[16][15];
+
 struct Action::Slide : Action {
     int direction;
 
@@ -48,3 +48,5 @@ struct Action::Slide : Action {
         out << "#" << ("URDL")[direction];
     }
 };
+
+Action::Slide* ACTIONSLIDES[4];

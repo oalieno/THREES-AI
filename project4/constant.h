@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 
+#include "action.h"
 #include "ntuple.h"
 
 const int LENMAX = 15;

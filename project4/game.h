@@ -25,29 +25,27 @@ struct Game {
 
         Action::Slide null(4);
         for (int i = 0; i < 9; i++) {
-            Action::Place place = environment.move(board, null);
-            place.apply(board);
-            moves.push_back(new Action::Place(place));
+            Action::Place* place = environment.move(board, &null);
+            place->apply(board);
+            moves.push_back(place);
         }
 
         while (not board.dead()) {
             Board as0, bs1;
 
-            Action::Slide slide = player.move(board);
-            slide.apply(board);
-            moves.push_back(new Action::Slide(slide));
+            Action::Slide* slide = player.move(board);
+            slide->apply(board);
+            moves.push_back(slide);
             as0 = board;
             
-            Action::Place place = environment.move(board, slide);
-            place.apply(board);
-            moves.push_back(new Action::Place(place));
+            Action::Place* place = environment.move(board, slide);
+            place->apply(board);
+            moves.push_back(place);
             bs1 = board;
 
             if (train) player.learn(as0, bs1);
         }
 
         stats.record(board, moves);
-
-        for (auto move : moves) delete move;
     }
 };

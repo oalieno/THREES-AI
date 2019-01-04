@@ -56,6 +56,14 @@ struct Board {
         return sum;
     }
 
+    int maxTile () const {
+        int max = 0;
+        for (int i = 0; i < 16; i++) {
+            max = std::max(max, value[i]);
+        }
+        return max;
+    }
+
     bool slidable (int action) const {
         Board tmp = *this;
         tmp.slide(action);

@@ -31,8 +31,8 @@ struct Player {
         return a;
     }
 
-    Action::Slide move (const Board& board) const {
-		return Action::Slide(evaluation(board));
+    Action::Slide* move (const Board& board) const {
+        return ACTIONSLIDES[evaluation(board)];
     }
 
 	void learn (const Board& as0, const Board& bs1) { 
