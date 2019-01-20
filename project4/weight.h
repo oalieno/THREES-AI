@@ -40,10 +40,14 @@ struct Weight {
         return *this;
     }
 
+    int hashSize (NTuple ntuple) {
+        return 4 * power(LENMAX, ntuple.len);
+    }
+
     float** lutMemoryCopy (float** memory) {
         float** tmp = new float*[ntuple.type];
         for (int i = 0; i < ntuple.type; i++) {
-            int l = power(LENMAX, ntuple.len);
+            int l = hashSize(ntuple);
             tmp[i] = new float[l];
             if (memory) memcpy(tmp[i], memory[i], sizeof(float) * l);
             else memset(tmp[i], 0, sizeof(float) * l);
@@ -54,7 +58,7 @@ struct Weight {
     void load () {
         std::ifstream file(filename);
         if (file) {
-            int l = power(LENMAX, ntuple.len);
+            int l = hashSize(ntuple);
             for (int i = 0; i < ntuple.type; i++) {
                 file.read((char*)lut[i], sizeof(float) * l);
             }
@@ -65,7 +69,7 @@ struct Weight {
     void dump () {
         std::ofstream file(filename);
         for (int i = 0; i < ntuple.type; i++) {
-            int l = power(LENMAX, ntuple.len);
+            int l = hashSize(ntuple);
             file.write((char*)lut[i], sizeof(float) * l);
         }
         file.close();
@@ -86,6 +90,7 @@ struct Weight {
         for (auto index : ntuple(type, isomorphism)) {
             hash = hash * LENMAX + board[index];
         }
+        hash = 4 * hash + (board.hint > 3 ? 0 : board.hint);
         return lut[type][hash];
     }
 

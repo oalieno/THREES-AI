@@ -13,11 +13,10 @@
 void init () {
     srand(time(0));
 
-    for (int i = 0; i < 16; i++) {
-        for (int j = 0; j < 15; j++) {
-            ACTIONPLACES[i][j] = new Action::Place(i, j);
-        }
+    for (int i = 0; i < 16; i++) for (int j = 0; j < 15; j++) for (int k = 0; k < 15; k++) {
+        ACTIONPLACES[i][j][k] = new Action::Place(i, j, k);
     }
+
     for (int i = 0; i < 4; i++) {
         ACTIONSLIDES[i] = new Action::Slide(i);
     }

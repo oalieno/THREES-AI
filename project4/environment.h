@@ -27,18 +27,22 @@ struct Environment {
         return 0;
     }
 
-    Action::Place* move (const Board& board, Action::Slide* last) {
-        int index = randomIndex(board, APPEARINDEXES[last->direction]);
-        int value = -1;
+    int generateValue (const Board& board) {
         int maxTile = board.maxTile();
         if (maxTile >= 7) {
             least48++;
             if (((float)(bonus + 1)) / least48 < 1.0 / 21.0) {
                 bonus++;
-                value = 4 + rand() % (maxTile - 6);
+                return 4 + rand() % (maxTile - 6);
             }
         }
-        if (value == -1) value = bag.get();
-        return ACTIONPLACES[index][value];
+        return bag.get();
+    }
+
+    Action::Place* move (const Board& board, Action::Slide* last) {
+        int index = randomIndex(board, APPEARINDEXES[last->direction]);
+        int value = board.hint;
+        int hint = generateValue(board);
+        return ACTIONPLACES[index][value][hint];
     }
 };

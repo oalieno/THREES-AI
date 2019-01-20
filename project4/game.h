@@ -22,6 +22,7 @@ struct Game {
         std::vector<Action*> moves;
 
         environment.bag.clear();
+        board.hint = environment.generateValue(board);
 
         Action::Slide null(4);
         for (int i = 0; i < 9; i++) {

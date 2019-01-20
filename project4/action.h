@@ -18,13 +18,14 @@ struct Action {
 };
 
 struct Action::Place : Action {
-    int index, value;
+    int index, value, hint;
 
     Place () {}
-    Place (int index, int value) : index(index), value(value) {}
+    Place (int index, int value, int hint) : index(index), value(value), hint(hint) {}
 
     void apply (Board& board) override {
         board[index] = value;
+        board.hint = hint;
     }
     
     void print (std::ostream& out) const override {
@@ -32,7 +33,7 @@ struct Action::Place : Action {
     }
 };
 
-Action::Place* ACTIONPLACES[16][15];
+Action::Place* ACTIONPLACES[16][15][15];
 
 struct Action::Slide : Action {
     int direction;

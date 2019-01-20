@@ -7,6 +7,7 @@
 
 struct Board {
     std::array<int, 16> value;
+    int hint;
 
     Board () : value{0} {}
 
