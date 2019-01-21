@@ -8,10 +8,17 @@
 
 struct Environment {
     std::string name;
-    int bonus, least48;
+    int bonus, least48, hint;
     Bag bag;
 
-    Environment () : name("CyKOR"), bonus(0), least48(0) {}
+    Environment () : name("CyKOR"), bonus(0), least48(0) {
+        clear();
+    }
+
+    void clear () {
+        bag.clear();
+        hint = generateValue(Board());
+    }
 
     int randomIndex (const Board& board, const std::vector<int>& indexes) const {
         int valid = 0;
@@ -42,8 +49,8 @@ struct Environment {
 
     Action::Place* move (const Board& board, Action::Slide* last) {
         int index = randomIndex(board, APPEARINDEXES[last->direction]);
-        int value = board.hint;
-        int hint = generateValue(board);
-        return ACTIONPLACES[index][value][hint];
+        int value = hint;
+        hint = generateValue(board);
+        return ACTIONPLACES[index][value][hint > 3 ? 4 : hint];
     }
 };

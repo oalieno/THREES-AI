@@ -21,8 +21,7 @@ struct Game {
         Board board;
         std::vector<Action*> moves;
 
-        environment.bag.clear();
-        board.hint = environment.generateValue(board);
+        environment.clear();
 
         Action::Slide* slide = ACTIONSLIDES[4];
         Action::Place* place;

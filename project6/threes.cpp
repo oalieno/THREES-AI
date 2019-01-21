@@ -18,7 +18,7 @@
 void init () {
     srand(time(0));
 
-    for (int i = 0; i < 16; i++) for (int j = 0; j < 15; j++) for (int k = 0; k < 15; k++) {
+    for (int i = 0; i < 16; i++) for (int j = 0; j < 15; j++) for (int k = 0; k < 5; k++) {
         ACTIONPLACES[i][j][k] = new Action::Place(i, j, k);
     }
 
@@ -74,6 +74,8 @@ int main (int argc, char** argv) {
         bool attack = false;
         Board board;
 
+        player.weight.load();
+
         Action::Slide* slide;
         Action::Place* place;
 
@@ -109,8 +111,7 @@ int main (int argc, char** argv) {
                     attack = true;
                 } else {
                     attack = false;
-                    environment.bag.clear();
-                    board.hint = environment.generateValue(board);
+                    environment.clear();
                     slide = ACTIONSLIDES[4];
                 }
             } else if (std::regex_match(cmd, sm, r_close)) {
