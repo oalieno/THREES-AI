@@ -7,6 +7,15 @@ struct Bag {
 
     void clear () {
         value.clear();
+        fill();
+    }
+
+    void fill () {
+        for (int k = 0; k < 4; k++) {
+            for (int i = 1; i <= 3; i++) {
+                value.push_back(i);
+            }
+        }
     }
 
     int pop (int index) {
@@ -16,14 +25,9 @@ struct Bag {
     }
 
     int get () {
-        if (value.empty()) {
-            for (int k = 0; k < 4; k++) {
-                for (int i = 1; i <= 3; i++) {
-                    value.push_back(i);
-                }
-            }
-        }
-        return pop(rand() % value.size());
+        int tile = pop(rand() % value.size());
+        if (value.empty()) fill();
+        return tile;
     }
 
     std::vector<int> value;

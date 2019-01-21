@@ -66,7 +66,7 @@ int main (int argc, char** argv) {
     auto filename = args.get<std::string>("filename", Weight::recommendedFileName(ntuple, alpha));
     Weight weight(ntuple, alpha, directory, filename);
 
-    Environment environment;
+    Environment environment(weight);
     Player player(weight);
 
     if (arena) {
@@ -123,7 +123,7 @@ int main (int argc, char** argv) {
                     slide->apply(board);
                     action = slide;
                 } else {
-                    place = environment.move(board, slide);
+                    place = environment.move(board, slide, true);
                     place->apply(board);
                     action = place;
                 }
