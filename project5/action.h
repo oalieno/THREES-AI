@@ -29,7 +29,7 @@ struct Action::Place : Action {
     }
     
     void print (std::ostream& out) const override {
-        out << std::hex << std::uppercase << index << value;
+        out << std::hex << std::uppercase << index << value << "+" << (hint > 3 ? 4 : hint);
     }
 };
 
@@ -50,4 +50,4 @@ struct Action::Slide : Action {
     }
 };
 
-Action::Slide* ACTIONSLIDES[4];
+Action::Slide* ACTIONSLIDES[5];

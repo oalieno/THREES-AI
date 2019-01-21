@@ -7,10 +7,11 @@
 #include "weight.h"
 
 struct Player {
+    std::string name;
     Weight weight;
 
     Player () {}
-    Player (const Weight& weight) : weight(weight) {}
+    Player (const Weight& weight) : name("PPP"), weight(weight) {}
 	
 	float evaluate (const Board& board, int action) const {  
         Board tmp = board;

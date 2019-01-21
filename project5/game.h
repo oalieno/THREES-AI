@@ -24,9 +24,11 @@ struct Game {
         environment.bag.clear();
         board.hint = environment.generateValue(board);
 
-        Action::Slide null(4);
+        Action::Slide* slide = ACTIONSLIDES[4];
+        Action::Place* place;
+
         for (int i = 0; i < 9; i++) {
-            Action::Place* place = environment.move(board, &null);
+            place = environment.move(board, slide);
             place->apply(board);
             moves.push_back(place);
         }
@@ -34,12 +36,12 @@ struct Game {
         while (not board.dead()) {
             Board as0, bs1;
 
-            Action::Slide* slide = player.move(board);
+            slide = player.move(board);
             slide->apply(board);
             moves.push_back(slide);
             as0 = board;
             
-            Action::Place* place = environment.move(board, slide);
+            place = environment.move(board, slide);
             place->apply(board);
             moves.push_back(place);
             bs1 = board;

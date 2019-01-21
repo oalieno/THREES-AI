@@ -2,6 +2,7 @@
 #include <string>
 #include <cstdlib>
 #include <ctime>
+#include <regex>
 
 #include "flags.h"
 #include "spdlog/spdlog.h"
@@ -21,7 +22,7 @@ void init () {
         ACTIONPLACES[i][j][k] = new Action::Place(i, j, k);
     }
 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         ACTIONSLIDES[i] = new Action::Slide(i);
     }
 
@@ -37,6 +38,14 @@ NTuple loadNTuple (std::string ntupleName) {
         spdlog::error("--ntuple only allow 4-tuples, 6-tuples");
         exit(0);
     }
+}
+
+int slideString2Int (std::string str) {
+    if (str == "U") return 0;
+    else if (str == "R") return 1;
+    else if (str == "D") return 2;
+    else if (str == "L") return 3;
+    else return -1;
 }
 
 int main (int argc, char** argv) {
@@ -59,15 +68,68 @@ int main (int argc, char** argv) {
 
     Environment environment;
     Player player(weight);
-    Game game(environment, player);
 
-    game.player.weight.load();
-    while (total--) game.play(train);
-    if (train) game.player.weight.dump();
+    if (arena) {
+        bool playing = false;
+        Board board;
 
-    game.stats.summary(std::cerr);
+        Action::Slide* slide;
+        Action::Place* place;
 
-    if (not std::empty(save)) game.stats.save(save);
+        std::regex r_info("^% (.*)$");
+        std::regex r_message("^\\? message from (.*): (.*)$");
+        std::regex r_open("^#(\\S+) open (\\S+):(\\S+)$");
+        std::regex r_close("^#(\\S+) close (\\S+)$");
+        std::regex r_ask("^#(\\S+) \\?$");
+        std::regex r_pmove("^#(\\S+) #([UDLR])$");
+        std::regex r_emove("^#(\\S+) ([0-9A-F])([0-9A-F])\\+([1234])$");
+        std::smatch sm;
+
+        std::string cmd;
+        while (getline(std::cin, cmd)) {
+            if (cmd == "@ login") {
+                std::string reply = fmt::format("@ login 0410022|07ssj4N1au {}(player) {}(environment)", player.name, environment.name);
+                std::cout << reply << std::endl;
+            } else if (std::regex_match(cmd, sm, r_info)) {
+                //spdlog::info("arena info | {}", std::string(sm[1]));
+            } else if (std::regex_match(cmd, sm, r_message)) {
+                //spdlog::info("message from {} | {}", std::string(sm[1]), std::string(sm[2]));
+            } else if (std::regex_match(cmd, sm, r_open)) {
+                if (playing) continue;
+                std::string id = sm[1];
+                std::string reply = fmt::format("#{} open accept", id);
+                std::cout << reply << std::endl;
+                // init game
+                playing = true;
+                board = Board();
+                environment.bag.clear();
+                board.hint = environment.generateValue(board);
+                slide = ACTIONSLIDES[4];
+            } else if (std::regex_match(cmd, sm, r_close)) {
+                playing = false;
+            } else if (std::regex_match(cmd, sm, r_ask)) {
+                place = environment.move(board, slide);
+                place->apply(board);
+                std::string id = sm[1];
+                std::cout << "#" << id << " " << *place << std::endl;
+            } else if (std::regex_match(cmd, sm, r_pmove)) {
+                std::string id = sm[1];
+                std::string s = sm[2];
+                slide = ACTIONSLIDES[slideString2Int(s)];
+                slide->apply(board);
+            }
+        }
+    } else {
+        Game game(environment, player);
+
+        game.player.weight.load();
+        while (total--) game.play(train);
+        if (train) game.player.weight.dump();
+
+        game.stats.summary(std::cerr);
+
+        if (not std::empty(save)) game.stats.save(save);
+    }
 
     return 0;
 }

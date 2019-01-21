@@ -7,10 +7,11 @@
 #include "board.h"
 
 struct Environment {
-    Bag bag;
+    std::string name;
     int bonus, least48;
+    Bag bag;
 
-    Environment () : bonus(0), least48(0) {}
+    Environment () : name("CyKOR"), bonus(0), least48(0) {}
 
     int randomIndex (const Board& board, const std::vector<int>& indexes) const {
         int valid = 0;
