@@ -107,7 +107,7 @@ int main (int argc, char** argv) {
                 if (playing) continue;
                 playing = true;
                 board = Board();
-                if (p1 == "$0410022") {
+                if (p1 == "$0410022" or p1 == "PPP") {
                     attack = true;
                 } else {
                     attack = false;

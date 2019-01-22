@@ -12,14 +12,14 @@ struct Player {
 
     Player () {}
     Player (const Weight& weight) : name("PPP"), weight(weight) {}
-	
-	float evaluate (const Board& board, int action) const {  
+
+    float evaluate (const Board& board, int action) const {
         Board tmp = board;
         if (not tmp.slidable(action)) return std::numeric_limits<float>::lowest();
         int reward = tmp.slide(action);
         return reward + weight(tmp);
-	}
-	
+    }
+
     auto evaluation (const Board& board) const {
         int a = 0;
         float max = evaluate(board, 0);
@@ -36,11 +36,11 @@ struct Player {
         return ACTIONSLIDES[evaluation(board)];
     }
 
-	void learn (const Board& as0, const Board& bs1) { 
-		Board as1 = bs1;
+    void learn (const Board& as0, const Board& bs1) {
+        Board as1 = bs1;
         int action = evaluation(as1);
         int slidable = as1.slidable(action);
         int r1 = as1.slide(action);     
-		weight.update(r1, as0, as1, slidable);
-	}
+        weight.update(r1, as0, as1, slidable);
+    }
 };
